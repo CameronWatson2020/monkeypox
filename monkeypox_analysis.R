@@ -1,13 +1,13 @@
 #------ Generalised Linear Mixed Models for monkeypox meta-analyses ------ #
 
-# code produced by C.Watson based used in Badenoch et al., 2022.
+# code produced by C.Watson based on analysis in Badenoch et al., 2022.
 
-# last updated on 24/06/22 by C.Watson (introductory comments added)
+# last updated on 14/07/22 by C.Watson (sensitivity analysis comments added)
 
 # this code contains all meta-analytic calculations for the paper:
 # "Neurological and psychiatric presentations associated with human monkeypox virus infection: a systematic review and meta-analysis"
 
-# The code is divided into three major sections: 
+# The code is divided into four major sections: 
 
 # PREPARATION: Here, the packages necessary for the analysis are loaded
 # and the data frame is prepared for the analysis.
@@ -19,6 +19,9 @@
 # whether the study was retrospective or prospective in design
 # z-values and p-values are computed for the subgroup comparison. 
 # finally, a forest plot of the subgroup analysis is produced.
+
+# SENSITIVITY ANALYSIS: In this section, the main analyses are repeated using an inverse-variance model
+# with the Freeman-Tukey double-arcsine transformation. This is done as a sensitivity analysis.
 
 
 ## PREPARATION -------------------------------------------------------------------------------------------------------------------
@@ -35,9 +38,9 @@ library(tidyverse)
 # set working directory ----------------------------------------------------------------------------------------------------------
 # set working directory manually
 
-setwd("~/Documents/Medicine/Research/Monkeypox//") 
+# setwd("") 
 
-csv_name <- "Monkeypox data extraction - sheet for analysis.csv"
+# csv_name <- ""
 
 meta_data <- read_csv(csv_name) 
 meta_data$n <- as.numeric(as.character(meta_data$n)
@@ -325,4 +328,61 @@ forest(fatigue_glmm,
 text(-0.18, -1, pos=4, cex=1, bquote(paste("(", I^2, " = ",
                                            .(formatC(fatigue_glmm$I2, digits=1, format="f")), "%)")))
 dev.off()
+
+## SENSITIVITY ANALYSIS ----------------------------------------------------------------------------------------
+
+# 1 - Headache 
+sensitivity_head <- rma.uni(xi = headache, ni = n, data = head_df,
+                            slab = paste(reference), 
+                            measure = "PFT",
+                            method = "REML")
+sensitivity_head
+
+predict(sensitivity_head, transf=transf.ipft.hm, targs=list(ni=sensitivity_head$ni))
+
+# 2 - Myalgia 
+sensitivity_myalgia <- rma.uni(xi = myalgia, ni = n, data = myalgia_df,
+                                slab = paste(reference), 
+                                measure = "PFT",
+                                method = "REML")
+sensitivity_myalgia
+
+predict(sensitivity_myalgia, transf=transf.ipft.hm, targs=list(ni=sensitivity_myalgia$ni))
+
+# 3 - Seizures 
+sensitivity_seizures <- rma.uni(xi = seizure, ni = n, data = seizure_df,
+                                 slab = paste(reference), 
+                                 measure = "PFT",
+                                 method = "REML")
+sensitivity_seizures
+
+predict(sensitivity_seizures, transf=transf.ipft.hm, targs=list(ni=sensitivity_seizures$ni))
+
+# 4 - Confusion 
+sensitivity_confusion <- rma.uni(xi = confusion, ni = n, data = confusion_df,
+                              slab = paste(reference), 
+                              measure = "PFT",
+                              method = "REML")
+sensitivity_confusion
+
+predict(sensitivity_confusion, transf=transf.ipft.hm, targs=list(ni=sensitivity_confusion$ni))
+
+# 5 - Encephalitis  
+sensitivity_enceph <- rma.uni(xi = encephalitis, ni = n, data = enceph_df,
+                           slab = paste(reference), 
+                           measure = "PFT",
+                           method = "REML")
+sensitivity_enceph
+
+predict(sensitivity_enceph, transf=transf.ipft.hm, targs=list(ni=sensitivity_enceph$ni))
+
+# 6 - Fatigue
+sensitivity_fat <- rma.uni(xi = fatigue, ni = n, data = fatigue_df,
+                           slab = paste(reference), 
+                           measure = "PFT",
+                           method = "REML")
+sensitivity_fat
+
+predict(sensitivity_fat, transf=transf.ipft.hm, targs=list(ni=sensitivity_fat$ni))
+
 
