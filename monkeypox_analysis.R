@@ -2,7 +2,7 @@
 
 # code produced by C.Watson based on analysis in Badenoch et al., 2022.
 
-# last updated on 14/07/22 by C.Watson (sensitivity analysis comments added)
+# last updated on 15/07/22 by C.Watson (sensitivity analysis comments added)
 
 # this code contains all meta-analytic calculations for the paper:
 # "Neurological and psychiatric presentations associated with human monkeypox virus infection: a systematic review and meta-analysis"
@@ -21,7 +21,8 @@
 # finally, a forest plot of the subgroup analysis is produced.
 
 # SENSITIVITY ANALYSIS: In this section, the main analyses are repeated using an inverse-variance model
-# with the Freeman-Tukey double-arcsine transformation. This is done as a sensitivity analysis.
+# with the Freeman-Tukey double-arcsine transformation. This is done as a sensitivity analysis. 
+# We then conduct a meta-analysis using on homogenous studies
 
 
 ## PREPARATION -------------------------------------------------------------------------------------------------------------------
@@ -38,9 +39,9 @@ library(tidyverse)
 # set working directory ----------------------------------------------------------------------------------------------------------
 # set working directory manually
 
-# setwd("") 
+setwd("~/Documents/Medicine/Research/Monkeypox//") 
 
-# csv_name <- ""
+csv_name <- "Monkeypox data extraction - sheet for analysis.csv"
 
 meta_data <- read_csv(csv_name) 
 meta_data$n <- as.numeric(as.character(meta_data$n)
@@ -67,17 +68,18 @@ predict(head_glmm, transf = transf.ilogit)
 # get sample size
 sum(head_df$n)
 
-# draw forest plot for headache meta-analysis (and save it)
-pdf(file="headache_full.pdf", width = 11)
-
+# draw forest plot for headache meta-analysis
 forest(head_glmm, 
-       xlim=c(-0.3,1.2),
-       transf = transf.ilogit) +
-  title(main = "Proportion of patients reporting headache")
+       xlim=c(-0.6,1.2),
+       ilab=cbind(head_df$headache, head_df$n), ilab.xpos=c(-0.2,-0.1), 
+       transf = transf.ilogit,
+       cex=.75, header="Author(s) and Year", mlab="",)
+op <- par(cex=.75, font=2)
+text(c(-0.2,-0.1), 8.04, c("Headache", "N"))
+par(op)
 
-text(-0.18, -1, pos=4, cex=1, bquote(paste("(", I^2, " = ",
+text(-0.5, -1, pos=4, cex=0.8, bquote(paste("(", I^2, " = ",
                                            .(formatC(head_glmm$I2, digits=1, format="f")), "%)")))
-dev.off()
 
 #1a - Headache - Sub-group Analysis 
 all_head <- rma.glmm(xi = headache, ni = n, data = head_df,
@@ -188,16 +190,20 @@ predict(myalgia_glmm, transf = transf.ilogit)
 # get sample size
 sum(myalgia_df$n)
 
-# draw forest plot for headache meta-analysis (and save it)
+# draw forest plot for myalgia meta-analysis 
 pdf(file="myalgia_full.pdf", width = 11)
 
 forest(myalgia_glmm, 
-       xlim=c(-0.35,1.2),
-       transf = transf.ilogit) +
-  title(main = "Proportion of patients reporting myalgia")
+       xlim=c(-0.6,1.2),
+       ilab=cbind(myalgia_df$myalgia, myalgia_df$n), ilab.xpos=c(-0.2,-0.1), 
+       transf = transf.ilogit,
+       cex=.75, header="Author(s) and Year", mlab="",)
+op <- par(cex=.75, font=2)
+text(c(-0.2,-0.1), 6, c("Myalgia", "N"))
+par(op)
 
-text(-0.18, -1, pos=4, cex=1, bquote(paste("(", I^2, " = ",
-                                           .(formatC(myalgia_glmm$I2, digits=1, format="f")), "%)")))
+text(-0.5, -1, pos=4, cex=0.8, bquote(paste("(", I^2, " = ",
+                                            .(formatC(myalgia_glmm$I2, digits=1, format="f")), "%)")))
 dev.off()
 
 # 3: Seizures - Full meta-analysis - 2 studies ------------------------------------------
@@ -220,17 +226,19 @@ predict(seizure_glmm, transf = transf.ilogit)
 # get sample size
 sum(seizure_df$n)
 
-# draw forest plot for headache meta-analysis (and save it)
-pdf(file="seizure_full.pdf", width = 11)
+# draw forest plot for seizure meta-analysis
 
 forest(seizure_glmm, 
-       xlim=c(-0.35,1.2),
-       transf = transf.ilogit) +
-  title(main = "Proportion of patients with  seizures")
+       xlim=c(-0.6,1.2),
+       ilab=cbind(seizure_df$seizure, seizure_df$n), ilab.xpos=c(-0.2,-0.1), 
+       transf = transf.ilogit,
+       cex=.75, header="Author(s) and Year", mlab="",)
+op <- par(cex=.75, font=2)
+text(c(-0.2,-0.1), 4.02, c("Seizures", "N"))
+par(op)
 
-text(-0.18, -1, pos=4, cex=1, bquote(paste("(", I^2, " = ",
-                                           .(formatC(seizure_glmm$I2, digits=1, format="f")), "%)")))
-dev.off()
+text(-0.5, -1, pos=4, cex=0.8, bquote(paste("(", I^2, " = ",
+                                            .(formatC(seizure_glmm$I2, digits=1, format="f")), "%)")))
 
 # 4: Confusion - Full meta-analysis - 2 studies ------------------------------------------
 
@@ -252,17 +260,18 @@ predict(confusion_glmm, transf = transf.ilogit)
 # get sample size
 sum(confusion_df$n)
 
-# draw forest plot for headache meta-analysis (and save it)
-pdf(file="confusion_full.pdf", width = 11)
-
+# draw forest plot for confusion meta-analysis 
 forest(confusion_glmm, 
-       xlim=c(-0.35,1.2),
-       transf = transf.ilogit) +
-  title(main = "Proportion of patients with confusion")
+       xlim=c(-0.6,1.2),
+       ilab=cbind(confusion_df$confusion, confusion_df$n), ilab.xpos=c(-0.2,-0.1), 
+       transf = transf.ilogit,
+       cex=.75, header="Author(s) and Year", mlab="",)
+op <- par(cex=.75, font=2)
+text(c(-0.2,-0.1), 4.02, c("Confusion", "N"))
+par(op)
 
-text(-0.18, -1, pos=4, cex=1, bquote(paste("(", I^2, " = ",
-                                           .(formatC(confusion_glmm$I2, digits=1, format="f")), "%)")))
-dev.off()
+text(-0.5, -1, pos=4, cex=0.8, bquote(paste("(", I^2, " = ",
+                                            .(formatC(confusion_glmm$I2, digits=1, format="f")), "%)")))
 
 # 5: Encephalitis - Full meta-analysis - 3 studies ------------------------------------------
 
@@ -284,17 +293,18 @@ predict(enceph_glmm, transf = transf.ilogit)
 # get sample size
 sum(enceph_df$n)
 
-# draw forest plot for headache meta-analysis (and save it)
-pdf(file="encephalitis_full.pdf", width = 11)
-
+# draw forest plot for encephalitis meta-analysis
 forest(enceph_glmm, 
-       xlim=c(-0.35,1.2),
-       transf = transf.ilogit) +
-  title(main = "Proportion of patients with encephalitis")
+       xlim=c(-0.6,1.2),
+       ilab=cbind(enceph_df$encephalitis, enceph_df$n), ilab.xpos=c(-0.2,-0.1), 
+       transf = transf.ilogit,
+       cex=.75, header="Author(s) and Year", mlab="",)
+op <- par(cex=.75, font=2)
+text(c(-0.2,-0.1), 5, c("Encephalitis", "N"))
+par(op)
 
-text(-0.18, -1, pos=4, cex=1, bquote(paste("(", I^2, " = ",
-                                           .(formatC(enceph_glmm$I2, digits=1, format="f")), "%)")))
-dev.off()
+text(-0.5, -1, pos=4, cex=0.8, bquote(paste("(", I^2, " = ",
+                                            .(formatC(enceph_glmm$I2, digits=1, format="f")), "%)")))
 
 
 # 6: Fatigue - Full meta-analysis - 2 studies ------------------------------------------
@@ -317,17 +327,18 @@ predict(fatigue_glmm, transf = transf.ilogit)
 # get sample size
 sum(fatigue_df$n)
 
-# draw forest plot for headache meta-analysis (and save it)
-pdf(file="fatigue_full.pdf", width = 11)
-
+# draw forest plot for fatigue meta-analysis 
 forest(fatigue_glmm, 
-       xlim=c(-0.35,1.2),
-       transf = transf.ilogit) +
-  title(main = "Proportion of patients reporting fatigue")
+       xlim=c(-0.6,1.2),
+       ilab=cbind(fatigue_df$fatigue, fatigue_df$n), ilab.xpos=c(-0.2,-0.1), 
+       transf = transf.ilogit,
+       cex=.75, header="Author(s) and Year", mlab="",)
+op <- par(cex=.75, font=2)
+text(c(-0.2,-0.1), 4.02, c("Fatigue", "N"))
+par(op)
 
-text(-0.18, -1, pos=4, cex=1, bquote(paste("(", I^2, " = ",
-                                           .(formatC(fatigue_glmm$I2, digits=1, format="f")), "%)")))
-dev.off()
+text(-0.5, -1, pos=4, cex=0.8, bquote(paste("(", I^2, " = ",
+                                            .(formatC(fatigue_glmm$I2, digits=1, format="f")), "%)")))
 
 ## SENSITIVITY ANALYSIS ----------------------------------------------------------------------------------------
 
@@ -385,4 +396,133 @@ sensitivity_fat
 
 predict(sensitivity_fat, transf=transf.ipft.hm, targs=list(ni=sensitivity_fat$ni))
 
+# Homogeneity analysis 
 
+csv_name <- "Monkeypox data extraction - Homogeniety analysis.csv"
+
+meta_data <- read_csv(csv_name) 
+meta_data$n <- as.numeric(as.character(meta_data$n)
+                          
+# Headache
+# prepare data frame for meta-analysis
+meta_data$headache <- as.numeric(as.character(meta_data$headache))
+head_df <- meta_data %>% filter(!is.na(headache)) 
+head_df <- head_df %>% mutate(head_prop = headache/n)
+head_df <- head_df %>% arrange(head_prop)
+
+# estimate glmm for full meta-analysis
+head_glmm <- rma.glmm(xi = headache, ni = n, data = head_df,
+                      slab = paste(reference),
+                      measure = "PLO")
+head_glmm
+
+# get prevalence estimates
+predict(head_glmm, transf = transf.ilogit) 
+
+# get sample size
+sum(head_df$n)
+
+forest(head_glmm, 
+       xlim=c(-0.6,1.2),
+       ilab=cbind(head_df$headache, head_df$n), ilab.xpos=c(-0.2,-0.1), 
+       transf = transf.ilogit,
+       cex=.75, header="Author(s) and Year", mlab="",)
+op <- par(cex=.75, font=2)
+text(c(-0.2,-0.1), 5, c("Headache", "N"))
+par(op)
+
+text(-0.5, -1, pos=4, cex=0.8, bquote(paste("(", I^2, " = ",
+                                            .(formatC(head_glmm$I2, digits=1, format="f")), "%)")))
+
+# Myalgia 
+# prepare data frame for meta-analysis
+meta_data$myalgia <- as.numeric(as.character(meta_data$myalgia))
+myalgia_df <- meta_data %>% filter(!is.na(myalgia)) 
+myalgia_df <- myalgia_df %>% mutate(myalgia_prop = myalgia/n)
+myalgia_df <- myalgia_df %>% arrange(myalgia_prop)
+
+# estimate glmm for full meta-analysis
+myalgia_glmm <- rma.glmm(xi = myalgia, ni = n, data = myalgia_df,
+                         slab = paste(reference),
+                         measure = "PLO")
+myalgia_glmm
+
+# get prevalence estimates
+predict(myalgia_glmm, transf = transf.ilogit) 
+
+# get sample size
+sum(myalgia_df$n)
+
+forest(myalgia_glmm, 
+       xlim=c(-0.6,1.2),
+       ilab=cbind(myalgia_df$myalgia, myalgia_df$n), ilab.xpos=c(-0.2,-0.1), 
+       transf = transf.ilogit,
+       cex=.75, header="Author(s) and Year", mlab="",)
+op <- par(cex=.75, font=2)
+text(c(-0.2,-0.1), 4, c("Myalgia", "N"))
+par(op)
+
+text(-0.5, -1, pos=4, cex=0.8, bquote(paste("(", I^2, " = ",
+                                            .(formatC(myalgia_glmm$I2, digits=1, format="f")), "%)")))
+
+# Seizure 
+meta_data$seizure <- as.numeric(as.character(meta_data$seizure))
+seizure_df <- meta_data %>% filter(!is.na(seizure)) 
+seizure_df <- seizure_df %>% mutate(seizure_prop = seizure/n)
+seizure_df <- seizure_df %>% arrange(seizure_prop)
+
+# estimate glmm for full meta-analysis
+seizure_glmm <- rma.glmm(xi = seizure, ni = n, data = seizure_df,
+                         slab = paste(reference),
+                         measure = "PLO")
+seizure_glmm
+
+# get prevalence estimates
+predict(seizure_glmm, transf = transf.ilogit) 
+
+# get sample size
+sum(seizure_df$n)
+
+forest(seizure_glmm, 
+       xlim=c(-0.6,1.2),
+       ilab=cbind(seizure_df$seizure, seizure_df$n), ilab.xpos=c(-0.2,-0.1), 
+       transf = transf.ilogit,
+       cex=.75, header="Author(s) and Year", mlab="",)
+op <- par(cex=.75, font=2)
+text(c(-0.2,-0.1), 4.02, c("Seizures", "N"))
+par(op)
+
+text(-0.5, -1, pos=4, cex=0.8, bquote(paste("(", I^2, " = ",
+                                            .(formatC(seizure_glmm$I2, digits=1, format="f")), "%)")))
+
+# Encephalitis 
+
+# prepare data frame for meta-analysis
+meta_data$encephalitis <- as.numeric(as.character(meta_data$encephalitis))
+enceph_df <- meta_data %>% filter(!is.na(encephalitis)) 
+enceph_df <- enceph_df %>% mutate(enceph_prop = encephalitis/n)
+enceph_df <- enceph_df %>% arrange(enceph_prop)
+
+# estimate glmm for full meta-analysis
+enceph_glmm <- rma.glmm(xi = encephalitis, ni = n, data = enceph_df,
+                        slab = paste(reference),
+                        measure = "PLO")
+enceph_glmm
+
+# get prevalence estimates
+predict(enceph_glmm, transf = transf.ilogit) 
+
+# get sample size
+sum(enceph_df$n)
+
+forest(enceph_glmm, 
+       xlim=c(-0.6,1.2),
+       ilab=cbind(enceph_df$encephalitis, enceph_df$n), ilab.xpos=c(-0.2,-0.1), 
+       transf = transf.ilogit,
+       cex=.75, header="Author(s) and Year", mlab="",)
+op <- par(cex=.75, font=2)
+text(c(-0.2,-0.1), 4, c("Encephalitis", "N"))
+par(op)
+
+text(-0.5, -1, pos=4, cex=0.8, bquote(paste("(", I^2, " = ",
+                                            .(formatC(enceph_glmm$I2, digits=1, format="f")), "%)")))
